@@ -14,7 +14,7 @@ This repository includes local compatibility changes on top of the original upst
   - Python 3.10.11
   - Visual Studio 2022 Community with MSVC 19.44.35223.0
   - CUDA Toolkit 13.2.51
-  - FFmpeg 8.1 shared build for Windows with `bin`, `include`, and `lib` directories present
+  - FFmpeg 8.1 shared build for Windows 
   - CMake 3.21+ and `<4` (the project currently pins this in `pyproject.toml`)
 
 ----
