@@ -66,9 +66,21 @@ target_link_libraries(_PyNvCodec PUBLIC TC_CORE TC)
 include(GNUInstallDirs)
 # Install runtime dependencies (i.e. FFMPEG, nppi DLLS) on Windows but not Linux
 if(WIN32)
+  set(VPF_CUDA_RUNTIME_DIRS
+      ${CUDAToolkit_BIN_DIR}
+      ${CUDAToolkit_LIBRARY_DIR}
+  )
+  if(DEFINED CUDAToolkit_ROOT)
+    list(APPEND VPF_CUDA_RUNTIME_DIRS "${CUDAToolkit_ROOT}/bin")
+    list(APPEND VPF_CUDA_RUNTIME_DIRS "${CUDAToolkit_ROOT}/bin/x64")
+  endif()
+  if(DEFINED ENV{CUDA_PATH})
+    list(APPEND VPF_CUDA_RUNTIME_DIRS "$ENV{CUDA_PATH}/bin")
+    list(APPEND VPF_CUDA_RUNTIME_DIRS "$ENV{CUDA_PATH}/bin/x64")
+  endif()
   message(STATUS "TC_FFMPEG_ROOT/bin/=${TC_FFMPEG_ROOT}/bin/")
   install(TARGETS _PyNvCodec
-      RUNTIME_DEPENDENCIES DIRECTORIES "${TC_FFMPEG_ROOT}/bin/" "${TC_FFMPEG_ROOT}/lib/" ${CUDAToolkit_BIN_DIR} ${CUDAToolkit_LIBRARY_DIR}
+      RUNTIME_DEPENDENCIES DIRECTORIES "${TC_FFMPEG_ROOT}/bin/" "${TC_FFMPEG_ROOT}/lib/" ${VPF_CUDA_RUNTIME_DIRS}
 			   PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" "python" "nvcuda"# "nppi"
 			   POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
       RUNTIME DESTINATION PyNvCodec

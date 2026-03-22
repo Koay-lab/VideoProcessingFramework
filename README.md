@@ -18,6 +18,17 @@ VPF stands for Video Processing Framework. It’s set of C++ libraries and Pytho
 
 VPF also supports exporting GPU memory objects such as decoded video frames to PyTorch tensors without Host to Device copies. 
 
+### Koaylab compatibility
+
+This repository includes local compatibility changes on top of the original upstream project to support a current Windows build environment used in Koaylab.
+
+- Removed the legacy `pkg_resources` setuptools check from `setup.py` so `pip install .` can build with modern Python packaging environments.
+- Pinned the Python build dependency on CMake to `<4` in `pyproject.toml` to avoid an incompatibility between newer CMake releases and the vendored `pybind11` version used by this project.
+- Updated Windows/CMake CUDA detection to prefer `CUDACXX` and `CUDA_PATH`, tolerate newer MSVC toolsets, and use a CUDA 13.x-compatible default architecture list.
+- Improved Windows FFmpeg path handling in CMake so local installs can be pointed at a shared FFmpeg build more reliably.
+- Updated `src/TC/src/FFmpegDemuxer.cpp` for newer FFmpeg headers by replacing the deprecated seekability check based on `AVInputFormat::read_seek` and `read_seek2`.
+- Expanded Windows runtime dependency discovery for CUDA so wheel installation can find required NPP DLLs from modern CUDA layouts.
+
 ## Prerequisites
 VPF works on Linux(Ubuntu 20.04 and Ubuntu 22.04 only) and Windows
 
@@ -88,6 +99,12 @@ After resolving those you should be able to run `make run_samples_without_docker
 - Install a C++ toolchain either via Visual Studio or Tools for Visual Studio (https://visualstudio.microsoft.com/downloads/)
 - Install the CUDA Toolkit: https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64
 - Compile [FFMPEG](https://github.com/FFmpeg/FFmpeg/) with shared libraries or download pre-compiled binaries from a source you trust
+- Known working Windows combination for `pip install .` in this repository:
+  - Python 3.10.11
+  - Visual Studio 2022 Community with MSVC 19.44.35223.0
+  - CUDA Toolkit 13.2.51
+  - FFmpeg 8.1 shared build for Windows with `bin`, `include`, and `lib` directories present
+  - CMake 3.21+ and `<4` (the project currently pins this in `pyproject.toml`)
 - Install from the root directory of this repository indicating the location of the compiled FFMPEG in a Powershell console
 ```pwsh
 # Indicate path to your FFMPEG installation (with subfolders `bin` with DLLs, `include`, `lib`)

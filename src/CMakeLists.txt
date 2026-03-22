@@ -20,7 +20,15 @@ find_path(
 	TC_FFMPEG_ROOT_HINT
 	NAMES "include/libavcodec/avcodec.h" 
 )
-set(TC_FFMPEG_ROOT "${TC_FFMPEG_ROOT_HINT}" CACHE PATH "Where to find ffmpeg" PARENT_SCOPE)
+if(NOT DEFINED TC_FFMPEG_ROOT OR TC_FFMPEG_ROOT STREQUAL "")
+	set(TC_FFMPEG_ROOT "${TC_FFMPEG_ROOT_HINT}" CACHE PATH "Where to find ffmpeg")
+endif()
+
+if(WIN32 AND DEFINED TC_FFMPEG_ROOT AND TC_FFMPEG_ROOT MATCHES "^[A-Za-z]:[^/\\\\].*")
+	string(SUBSTRING "${TC_FFMPEG_ROOT}" 0 2 _vpf_drive)
+	string(SUBSTRING "${TC_FFMPEG_ROOT}" 2 -1 _vpf_rest)
+	set(TC_FFMPEG_ROOT "${_vpf_drive}/${_vpf_rest}" CACHE PATH "Where to find ffmpeg" FORCE)
+endif()
 
 add_subdirectory(PyNvCodec)
 # TODO: rename TC to NvCodec or something more descriptive

@@ -582,7 +582,8 @@ FFmpegDemuxer::FFmpegDemuxer(AVFormatContext *fmtcx) : fmtc(fmtcx) {
   // SEI extraction filter has lazy init as this feature is optional;
   bsfc_sei = nullptr;
 
-  /* Some inputs doesn't allow seek functionality.
-   * Check this ahead of time. */
-  is_seekable = fmtc->iformat->read_seek || fmtc->iformat->read_seek2;
+  /* Some inputs do not allow seek functionality.
+   * Newer FFmpeg versions no longer expose AVInputFormat::read_seek/read_seek2,
+   * so rely on the IO context seekability flags instead. */
+  is_seekable = fmtc->pb && (fmtc->pb->seekable & AVIO_SEEKABLE_NORMAL);
 }
