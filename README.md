@@ -1,3 +1,24 @@
+
+# Koaylab compatibility
+
+This repository includes local compatibility changes on top of the original upstream project to support a current Windows build environment used in Koaylab.
+
+- Removed the legacy `pkg_resources` setuptools check from `setup.py` so `pip install .` can build with modern Python packaging environments.
+- Pinned the Python build dependency on CMake to `<4` in `pyproject.toml` to avoid an incompatibility between newer CMake releases and the vendored `pybind11` version used by this project.
+- Updated Windows/CMake CUDA detection to prefer `CUDACXX` and `CUDA_PATH`, tolerate newer MSVC toolsets, and use a CUDA 13.x-compatible default architecture list.
+- Improved Windows FFmpeg path handling in CMake so local installs can be pointed at a shared FFmpeg build more reliably.
+- Updated `src/TC/src/FFmpegDemuxer.cpp` for newer FFmpeg headers by replacing the deprecated seekability check based on `AVInputFormat::read_seek` and `read_seek2`.
+- Expanded Windows runtime dependency discovery for CUDA so wheel installation can find required NPP DLLs from modern CUDA layouts.
+
+- Known working Windows combination for `pip install .` in this repository:
+  - Python 3.10.11
+  - Visual Studio 2022 Community with MSVC 19.44.35223.0
+  - CUDA Toolkit 13.2.51
+  - FFmpeg shared build for Windows with `bin`, `include`, and `lib` directories present
+  - CMake 3.21+ and `<4` (the project currently pins this in `pyproject.toml`)
+
+----
+
 ## Deprecation notice
 
 VPF is being replaced by [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/) library with leaner API and `pip install` support.
